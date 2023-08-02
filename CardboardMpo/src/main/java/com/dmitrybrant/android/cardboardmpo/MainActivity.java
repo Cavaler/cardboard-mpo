@@ -33,6 +33,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.KeyEvent;
 
 import com.google.vr.sdk.base.AndroidCompat;
 import com.google.vr.sdk.base.Eye;
@@ -172,6 +173,25 @@ public class MainActivity extends GvrActivity implements GvrView.StereoRenderer 
 
         // Always give user feedback.
         vibrator.vibrate(50);
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_SPACE:
+            case KeyEvent.KEYCODE_BUTTON_R1:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                currentFileIndex++;
+                loadNextMpo();
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+            case KeyEvent.KEYCODE_BUTTON_L1:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                currentFileIndex--;
+                loadNextMpo();
+                return true;
+            default:
+                return super.onKeyUp(keyCode, event);
+        }
     }
 
     @Override
@@ -318,6 +338,8 @@ public class MainActivity extends GvrActivity implements GvrView.StereoRenderer 
         }
         if (currentFileIndex >= mpoFileList.size()) {
             currentFileIndex = 0;
+        } else if (currentFileIndex < 0) {
+            currentFileIndex = mpoFileList.size() - 1;
         }
         setProgress(true);
         setStatus(true, String.format(getString(R.string.status_loading_file), mpoFileList.get(currentFileIndex).getName()));
